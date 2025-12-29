@@ -24,11 +24,22 @@ const UPDATE_LINK = "https://portal.cfx.re/assets/granted-assets";
 client.once("ready", async () => {
   console.log(`Logged in as ${client.user.tag}`);
 
-  // Register slash command globally
+  // Set bot status
+  client.user.setPresence({
+    activities: [
+      {
+        name: "Fuze Studios Updates",
+        type: 3 // Watching
+      }
+    ],
+    status: "online"
+  });
+
+  // Register slash command (Admin only)
   await client.application.commands.set([
     new SlashCommandBuilder()
       .setName("pushupdate")
-      .setDescription("Post a Prism-style resource update")
+      .setDescription("Post a Fuze Studios resource update")
       .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
   ]);
 
@@ -40,6 +51,7 @@ client.on("interactionCreate", async interaction => {
   if (interaction.isChatInputCommand()) {
     if (interaction.commandName === "pushupdate") {
 
+      // Extra admin check
       if (!interaction.member.permissions.has(PermissionFlagsBits.Administrator)) {
         return interaction.reply({ content: "❌ Admins only.", ephemeral: true });
       }
@@ -95,14 +107,14 @@ client.on("interactionCreate", async interaction => {
 
       const embed = new EmbedBuilder()
         .setColor("#39ff14")
-        .setTitle("✅ Resource Update")
+        .setTitle("✅ Script Updates")
         .addFields(
           { name: "Resource", value: resource, inline: true },
           { name: "Version", value: version, inline: true },
           { name: "Changes", value: `\`\`\`+ ${changes}\`\`\`` },
           { name: "Changed File(s)", value: `\`\`\`${files}\`\`\`` }
         )
-        .setDescription(`▶ **[Update Now](${UPDATE_LINK})**`)
+        .setDescription(`▶ **[Update Now](${https://portal.cfx.re/assets/granted-assets})**`)
         .setFooter({ text: "Fuze Studios" })
         .setTimestamp();
 
