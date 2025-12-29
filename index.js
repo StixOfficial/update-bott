@@ -87,11 +87,11 @@ client.on("interactionCreate", async interaction => {
 
     const embed = new EmbedBuilder()
       .setColor("#39ff14")
-      .setTitle("✅ Fuze Scripts")
+      .setTitle("<:fuze:1455337674369138761> Fuze Scripts")
       .addFields(
         { name: "Resource", value: resource, inline: true },
         { name: "Version", value: version, inline: true },
-        { name: "Changes", value: `\`\`\`+ ${changes}\`\`\`` },
+        { name: "Changes", value: `\`\`\`${changes}\`\`\`` },
         { name: "Changed File(s)", value: `\`\`\`${files}\`\`\`` }
       )
       .setDescription(`▶ **[Update Now](${UPDATE_LINK})**`)
@@ -108,3 +108,4 @@ client.on("interactionCreate", async interaction => {
 });
 
 client.login(process.env.DISCORD_TOKEN);
+
