@@ -7,31 +7,43 @@ const {
   ActionRowBuilder,
   SlashCommandBuilder,
   EmbedBuilder,
-  InteractionType
+  InteractionType,
+  PermissionFlagsBits
 } = require("discord.js");
+
 const express = require("express");
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
 const app = express();
-app.get("/", (_, res) => res.send("Bot is running"));
+app.get("/", (_, res) => res.send("Bot running"));
 app.listen(3000);
 
 const UPDATE_LINK = "https://portal.cfx.re/assets/granted-assets";
 
 client.once("ready", async () => {
-  console.log("Bot online");
+  console.log(`Logged in as ${client.user.tag}`);
 
+  // Register slash command globally
   await client.application.commands.set([
     new SlashCommandBuilder()
       .setName("pushupdate")
-      .setDescription("Post a resource update")
+      .setDescription("Post a Prism-style resource update")
+      .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
   ]);
+
+  console.log("Slash command registered");
 });
 
 client.on("interactionCreate", async interaction => {
+  // Slash command
   if (interaction.isChatInputCommand()) {
     if (interaction.commandName === "pushupdate") {
+
+      if (!interaction.member.permissions.has(PermissionFlagsBits.Administrator)) {
+        return interaction.reply({ content: "❌ Admins only.", ephemeral: true });
+      }
+
       const modal = new ModalBuilder()
         .setCustomId("pushupdateModal")
         .setTitle("Push Resource Update");
@@ -71,6 +83,7 @@ client.on("interactionCreate", async interaction => {
     }
   }
 
+  // Modal submit
   if (interaction.type === InteractionType.ModalSubmit) {
     if (interaction.customId === "pushupdateModal") {
       const resource = interaction.fields.getTextInputValue("resource");
@@ -89,8 +102,8 @@ client.on("interactionCreate", async interaction => {
           { name: "Changes", value: `\`\`\`+ ${changes}\`\`\`` },
           { name: "Changed File(s)", value: `\`\`\`${files}\`\`\`` }
         )
-        .setDescription(`▶ **[Update Now](https://portal.cfx.re/assets/granted-assets)**`)
-        .setFooter({ text: "Prism Scripts" })
+        .setDescription(`▶ **[Update Now](${UPDATE_LINK})**`)
+        .setFooter({ text: "Fuze Studios" })
         .setTimestamp();
 
       await interaction.channel.send({
@@ -98,7 +111,7 @@ client.on("interactionCreate", async interaction => {
         embeds: [embed]
       });
 
-      await interaction.reply({ content: "✅ Update posted!", ephemeral: true });
+      await interaction.reply({ content: "✅ Update posted.", ephemeral: true });
     }
   }
 });
